@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Innovation Analyzer — AI-Powered Technology Assessment</title>
+  <style>
+    :root {
+      --bg-primary:    #070b14;
+      --bg-card:       #0f1626;
+      --bg-card2:      #141d2e;
+      --bg-input:      #0d1522;
+      --accent:        #6366f1;
+      --accent-dim:    #4f52c4;
+      --accent-glow:   rgba(99,102,241,0.25);
+      --success:       #10b981;
+      --success-dim:   #059669;
+      --success-glow:  rgba(16,185,129,0.2);
+      --danger:        #ef4444;
+      --danger-dim:    #dc2626;
+      --danger-glow:   rgba(239,68,68,0.2);
+      --warning:       #f59e0b;
+      --warning-dim:   #d97706;
+      --text:          #f1f5f9;
+      --text-muted:    #94a3b8;
+      --text-dim:      #64748b;
+      --border:        #1e2d45;
+      --border-bright: #2a3f5f;
+      --radius:        12px;
+      --radius-lg:     18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #0a0f1e 0%, #0f1929 50%, #0c1520 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+    }
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--accent), #818cf8);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .logo-text { line-height: 1.2; }
+    .logo-title {
+      font-size: 1.1rem; font-weight: 700;
+      background: linear-gradient(90deg, #e2e8f0, #a5b4fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .logo-sub { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+    .header-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 20px;
+      font-size: 0.75rem; color: #a5b4fc;
+    }
+    .pulse {
+      width: 7px; height: 7px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    /* ── Layout ── */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ── Upload Panel ── */
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .panel-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--accent), #818cf8);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .panel-title { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .panel-body { padding: 1.5rem; }
+
+    /* ── Upload Zone ── */
+    .upload-zone {
+      border: 2px dashed var(--border-bright);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: var(--bg-input);
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--accent);
+      background: rgba(99,102,241,0.05);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .upload-label { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; }
+    .upload-hint { font-size: 0.78rem; color: var(--text-muted); }
+    .upload-limit {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-top: 0.7rem;
+      padding: 4px 10px;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 20px;
+      font-size: 0.72rem; color: var(--warning);
+    }
+
+    .file-selected {
+      display: none;
+      align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: 8px;
+      margin-top: 0.75rem;
+    }
+    .file-selected.show { display: flex; }
+    .file-selected-icon { font-size: 1.3rem; }
+    .file-selected-name {
+      font-size: 0.82rem; color: var(--success);
+      font-weight: 500; flex: 1;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .file-remove {
+      background: none; border: none; color: var(--text-dim);
+      cursor: pointer; font-size: 1rem; padding: 0 4px;
+      transition: color 0.2s;
+    }
+    .file-remove:hover { color: var(--danger); }
+
+    .section-label {
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--text-dim); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 0.75rem;
+    }
+    .upload-section { margin-bottom: 1.5rem; }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 1.2rem 0;
+      font-size: 0.75rem; color: var(--text-dim);
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── Analyze Button ── */
+    .btn-analyze {
+      width: 100%; padding: 1rem;
+      background: linear-gradient(135deg, var(--accent), #818cf8);
+      color: white; border: none; border-radius: var(--radius);
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: all 0.3s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      position: relative; overflow: hidden;
+    }
+    .btn-analyze::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, #818cf8, var(--accent));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .btn-analyze:hover::before { opacity: 1; }
+    .btn-analyze:hover { transform: translateY(-1px); box-shadow: 0 8px 25px var(--accent-glow); }
+    .btn-analyze:active { transform: translateY(0); }
+    .btn-analyze:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+      box-shadow: none;
+    }
+    .btn-analyze span { position: relative; }
+
+    /* ── Info Cards ── */
+    .info-cards {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-top: 1.5rem;
+    }
+    .info-card {
+      padding: 10px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+    }
+    .info-card-val { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+    .info-card-label { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; }
+
+    /* ── Results Panel ── */
+    .results-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      min-height: 600px;
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 600px; padding: 3rem;
+      text-align: center;
+    }
+    .empty-illustration {
+      width: 120px; height: 120px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(129,140,248,0.05));
+      border: 2px dashed rgba(99,102,241,0.2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; margin-bottom: 1.5rem;
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .empty-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .empty-desc { color: var(--text-muted); font-size: 0.9rem; max-width: 380px; line-height: 1.6; }
+    .tech-pills {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-top: 1.5rem; justify-content: center; max-width: 480px;
+    }
+    .tech-pill {
+      padding: 5px 12px;
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 20px;
+      font-size: 0.72rem; color: #a5b4fc;
+    }
+
+    /* ── Progress State ── */
+    .progress-state {
+      display: none;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 600px; padding: 3rem;
+    }
+    .progress-state.active { display: flex; }
+
+    .progress-spinner {
+      width: 80px; height: 80px;
+      position: relative; margin-bottom: 2rem;
+    }
+    .progress-spinner::before, .progress-spinner::after {
+      content: ''; position: absolute; border-radius: 50%;
+    }
+    .progress-spinner::before {
+      inset: 0;
+      border: 3px solid rgba(99,102,241,0.15);
+    }
+    .progress-spinner::after {
+      inset: 0;
+      border: 3px solid transparent;
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+    .progress-spinner-inner {
+      position: absolute; inset: 12px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(129,140,248,0.05));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .progress-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .progress-desc { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 2rem; }
+
+    .steps {
+      display: flex; flex-direction: column; gap: 12px;
+      width: 100%; max-width: 360px;
+    }
+    .step {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 16px;
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: all 0.4s;
+    }
+    .step.active {
+      border-color: var(--accent);
+      background: rgba(99,102,241,0.08);
+    }
+    .step.done {
+      border-color: rgba(16,185,129,0.3);
+      background: rgba(16,185,129,0.05);
+    }
+    .step-icon {
+      width: 32px; height: 32px;
+      background: var(--bg-input);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+      transition: all 0.4s;
+    }
+    .step.active .step-icon { background: rgba(99,102,241,0.2); }
+    .step.done .step-icon { background: rgba(16,185,129,0.15); }
+    .step-text { font-size: 0.85rem; }
+    .step-label { font-weight: 600; color: var(--text-muted); }
+    .step.active .step-label { color: var(--text); }
+    .step.done .step-label { color: var(--success); }
+    .step-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 1px; }
+
+    /* ── Results Content ── */
+    .results-content {
+      display: none;
+      padding: 0;
+    }
+    .results-content.show { display: block; }
+
+    /* ── Verdict Banner ── */
+    .verdict-banner {
+      padding: 2rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .verdict-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      opacity: 0.06;
+    }
+    .verdict-banner.qualified { background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.04)); }
+    .verdict-banner.qualified::before { background: var(--success); }
+    .verdict-banner.not-qualified { background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04)); }
+    .verdict-banner.not-qualified::before { background: var(--danger); }
+
+    .verdict-left { display: flex; align-items: center; gap: 1.5rem; }
+    .verdict-badge {
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-size: 0.85rem; font-weight: 800;
+      letter-spacing: 0.1em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .qualified .verdict-badge {
+      background: rgba(16,185,129,0.15);
+      border: 2px solid rgba(16,185,129,0.4);
+      color: var(--success);
+    }
+    .not-qualified .verdict-badge {
+      background: rgba(239,68,68,0.15);
+      border: 2px solid rgba(239,68,68,0.4);
+      color: var(--danger);
+    }
+    .verdict-title { font-size: 1.4rem; font-weight: 800; }
+    .verdict-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── Innovation Score Gauge ── */
+    .score-gauge {
+      position: relative; width: 110px; height: 110px; flex-shrink: 0;
+    }
+    .score-gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .score-gauge-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 8; }
+    .score-gauge-fill {
+      fill: none; stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .score-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .score-number { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+    .score-label { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── Section Grid ── */
+    .results-body { padding: 1.5rem 2rem 2rem; }
+
+    .section-title {
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--text-dim); letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+
+    /* ── Tech Stack ── */
+    .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-tag {
+      padding: 5px 12px;
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 20px;
+      font-size: 0.78rem; color: #a5b4fc;
+      font-weight: 500;
+    }
+    .tech-tag.primary {
+      background: rgba(99,102,241,0.2);
+      border-color: rgba(99,102,241,0.5);
+      color: var(--accent);
+    }
+
+    /* ── Correlation Cards ── */
+    .correlation-grid { display: flex; flex-direction: column; gap: 8px; }
+    .correlation-card {
+      padding: 12px 14px;
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+    }
+    .correlation-tech { font-size: 0.82rem; font-weight: 700; color: #c7d2fe; margin-bottom: 4px; }
+    .correlation-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Metric Cards ── */
+    .metric-card {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .metric-card-title {
+      font-size: 0.72rem; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+    .metric-card-val {
+      font-size: 1.4rem; font-weight: 800;
+      margin-bottom: 0.3rem;
+    }
+    .metric-card-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Score Bar ── */
+    .score-bar-wrap { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+    .score-row {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .score-row-label { font-size: 0.8rem; color: var(--text-muted); width: 110px; flex-shrink: 0; }
+    .score-row-bar {
+      flex: 1; height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px; overflow: hidden;
+    }
+    .score-row-fill {
+      height: 100%; border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent), #818cf8);
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+      width: 0;
+    }
+    .score-row-val { font-size: 0.8rem; font-weight: 700; color: var(--accent); width: 36px; text-align: right; }
+
+    /* ── TRL Indicator ── */
+    .trl-wrap { margin-bottom: 1.5rem; }
+    .trl-track {
+      display: flex; gap: 4px; margin-top: 0.75rem;
+    }
+    .trl-seg {
+      flex: 1; height: 10px; border-radius: 3px;
+      background: rgba(255,255,255,0.08);
+      transition: background 0.8s;
+    }
+    .trl-seg.active { background: linear-gradient(90deg, var(--accent), #818cf8); }
+    .trl-seg.passed { background: rgba(99,102,241,0.3); }
+    .trl-labels {
+      display: flex; justify-content: space-between;
+      margin-top: 6px;
+      font-size: 0.65rem; color: var(--text-dim);
+    }
+    .trl-current {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 1rem;
+      padding: 10px 14px;
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 8px;
+    }
+    .trl-level-badge {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 800; color: white; flex-shrink: 0;
+    }
+    .trl-label-text { font-size: 0.85rem; font-weight: 600; }
+    .trl-desc-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Lists ── */
+    .check-list { display: flex; flex-direction: column; gap: 8px; }
+    .check-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 0.83rem; color: var(--text-muted); line-height: 1.5;
+    }
+    .check-icon {
+      width: 20px; height: 20px; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; flex-shrink: 0; margin-top: 1px;
+    }
+    .check-icon.green { background: rgba(16,185,129,0.15); color: var(--success); }
+    .check-icon.red { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .check-icon.yellow { background: rgba(245,158,11,0.12); color: var(--warning); }
+
+    /* ── Business Card ── */
+    .business-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    .biz-card {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .biz-card-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .biz-card-title { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+    .biz-card-val { font-size: 0.88rem; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+    .revenue-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 700;
+    }
+    .revenue-HIGH { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--success); }
+    .revenue-MEDIUM { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); color: var(--warning); }
+    .revenue-LOW { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
+
+    /* ── Summary Box ── */
+    .summary-box {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem; color: var(--text-muted);
+      line-height: 1.75;
+    }
+
+    /* ── Recommendation Box ── */
+    .rec-box {
+      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(129,140,248,0.04));
+      border: 1px solid rgba(99,102,241,0.25);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .rec-box-title {
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--accent); text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 0.5rem;
+    }
+    .rec-box-text { font-size: 0.875rem; color: var(--text); line-height: 1.7; }
+
+    /* ── Comparables ── */
+    .comp-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+    .comp-chip {
+      padding: 6px 14px;
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 20px;
+      font-size: 0.78rem; color: #fcd34d;
+    }
+
+    /* ── Meta info ── */
+    .meta-bar {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      padding: 0.75rem 2rem;
+      border-top: 1px solid var(--border);
+      background: rgba(255,255,255,0.01);
+    }
+    .meta-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-dim); }
+    .meta-dot { color: var(--accent); font-size: 0.6rem; }
+
+    /* ── Error State ── */
+    .error-state {
+      display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      min-height: 600px; padding: 3rem; text-align: center;
+    }
+    .error-state.show { display: flex; }
+    .error-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .error-title { font-size: 1.2rem; font-weight: 700; color: var(--danger); margin-bottom: 0.5rem; }
+    .error-msg { font-size: 0.875rem; color: var(--text-muted); max-width: 400px; line-height: 1.6; }
+    .btn-retry {
+      margin-top: 1.5rem;
+      padding: 10px 24px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 8px;
+      color: var(--danger); font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-retry:hover { background: rgba(239,68,68,0.2); }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    @media (max-width: 1100px) {
+      .main { grid-template-columns: 1fr; }
+      .two-col, .business-grid { grid-template-columns: 1fr; }
+      .three-col { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .main { padding: 1rem; }
+      .three-col { grid-template-columns: 1fr; }
+      .verdict-banner { flex-direction: column; gap: 1rem; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🔬</div>
+      <div class="logo-text">
+        <div class="logo-title">Video Innovation Analyzer</div>
+        <div class="logo-sub">AI-Powered Technology Assessment</div>
+      </div>
+    </div>
+    <div class="header-badge">
+      <div class="pulse"></div>
+      Claude claude-sonnet-4-6 · Vision Analysis
+    </div>
+  </div>
+</header>
+
+<!-- ── Main Layout ── -->
+<div class="main">
+
+  <!-- ── Upload Panel ── -->
+  <aside>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-icon">📤</div>
+        <div class="panel-title">Load Content</div>
+      </div>
+      <div class="panel-body">
+
+        <!-- Video Upload -->
+        <div class="upload-section">
+          <div class="section-label">Video Presentation *</div>
+          <div class="upload-zone" id="videoZone">
+            <input type="file" id="videoInput" accept="video/*" />
+            <div class="upload-icon">🎬</div>
+            <div class="upload-label">Drop video or click to browse</div>
+            <div class="upload-hint">MP4, MOV, AVI, MKV, WebM</div>
+            <div class="upload-limit">⏱ Maximum 8 minutes</div>
+          </div>
+          <div class="file-selected" id="videoSelected">
+            <span class="file-selected-icon">🎥</span>
+            <span class="file-selected-name" id="videoName"></span>
+            <button class="file-remove" onclick="removeFile('video')">✕</button>
+          </div>
+        </div>
+
+        <div class="divider">optional</div>
+
+        <!-- Presentation Upload -->
+        <div class="upload-section">
+          <div class="section-label">Supporting Presentation</div>
+          <div class="upload-zone" id="pdfZone">
+            <input type="file" id="pdfInput" accept=".pdf,.ppt,.pptx" />
+            <div class="upload-icon">📊</div>
+            <div class="upload-label">Drop slides or click to browse</div>
+            <div class="upload-hint">PDF, PowerPoint</div>
+          </div>
+          <div class="file-selected" id="pdfSelected">
+            <span class="file-selected-icon">📄</span>
+            <span class="file-selected-name" id="pdfName"></span>
+            <button class="file-remove" onclick="removeFile('pdf')">✕</button>
+          </div>
+        </div>
+
+        <button class="btn-analyze" id="analyzeBtn" disabled onclick="runAnalysis()">
+          <span>🚀 Analyze Innovation Potential</span>
+        </button>
+
+        <div class="info-cards" id="metaCards" style="display:none">
+          <div class="info-card">
+            <div class="info-card-val" id="metaDuration">—</div>
+            <div class="info-card-label">Duration</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-val" id="metaFrames">—</div>
+            <div class="info-card-label">Frames Analyzed</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-val" id="metaTranscript">—</div>
+            <div class="info-card-label">Transcript</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-val" id="metaSlides">—</div>
+            <div class="info-card-label">Slides</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Results Panel ── -->
+  <section class="results-panel">
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-illustration">🔭</div>
+      <div class="empty-title">Ready to Analyze</div>
+      <div class="empty-desc">
+        Upload an 8-minute video presentation and optionally attach slides.
+        Our AI agent will assess the technology against 2025 cutting-edge benchmarks
+        and evaluate its innovation potential.
+      </div>
+      <div class="tech-pills">
+        <span class="tech-pill">Generative AI</span>
+        <span class="tech-pill">Quantum Computing</span>
+        <span class="tech-pill">Edge AI</span>
+        <span class="tech-pill">Spatial Computing</span>
+        <span class="tech-pill">Robotics</span>
+        <span class="tech-pill">Biotechnology</span>
+        <span class="tech-pill">Digital Twins</span>
+        <span class="tech-pill">Web3 / DePIN</span>
+        <span class="tech-pill">Neuromorphic</span>
+        <span class="tech-pill">Green Tech</span>
+      </div>
+    </div>
+
+    <!-- Progress State -->
+    <div class="progress-state" id="progressState">
+      <div class="progress-spinner">
+        <div class="progress-spinner-inner">🤖</div>
+      </div>
+      <div class="progress-title">Analyzing Innovation Content</div>
+      <div class="progress-desc">Claude claude-sonnet-4-6 is processing your video...</div>
+      <div class="steps">
+        <div class="step" id="step1">
+          <div class="step-icon">🎬</div>
+          <div class="step-text">
+            <div class="step-label">Extracting Video Frames</div>
+            <div class="step-sub">Sampling key moments from presentation</div>
+          </div>
+        </div>
+        <div class="step" id="step2">
+          <div class="step-icon">🎙️</div>
+          <div class="step-text">
+            <div class="step-label">Processing Audio</div>
+            <div class="step-sub">Extracting spoken content & context</div>
+          </div>
+        </div>
+        <div class="step" id="step3">
+          <div class="step-icon">📊</div>
+          <div class="step-text">
+            <div class="step-label">Parsing Presentation</div>
+            <div class="step-sub">Reading slide content & diagrams</div>
+          </div>
+        </div>
+        <div class="step" id="step4">
+          <div class="step-icon">🧠</div>
+          <div class="step-text">
+            <div class="step-label">AI Innovation Analysis</div>
+            <div class="step-sub">Correlating with 2025 tech landscape</div>
+          </div>
+        </div>
+        <div class="step" id="step5">
+          <div class="step-icon">📋</div>
+          <div class="step-text">
+            <div class="step-label">Generating Report</div>
+            <div class="step-sub">Compiling assessment & recommendations</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" id="errorState">
+      <div class="error-icon">⚠️</div>
+      <div class="error-title">Analysis Failed</div>
+      <div class="error-msg" id="errorMsg">An unexpected error occurred. Please try again.</div>
+      <button class="btn-retry" onclick="resetUI()">↩ Try Again</button>
+    </div>
+
+    <!-- Results Content -->
+    <div class="results-content" id="resultsContent">
+
+      <!-- Verdict Banner -->
+      <div class="verdict-banner" id="verdictBanner">
+        <div class="verdict-left">
+          <div class="verdict-badge" id="verdictBadge"></div>
+          <div>
+            <div class="verdict-title" id="verdictTitle"></div>
+            <div class="verdict-subtitle" id="verdictSubtitle"></div>
+          </div>
+        </div>
+        <div class="score-gauge" id="scoreGauge">
+          <svg viewBox="0 0 100 100">
+            <circle class="score-gauge-bg" cx="50" cy="50" r="42" />
+            <circle class="score-gauge-fill" id="gaugeFill" cx="50" cy="50" r="42"
+              stroke-dasharray="264" stroke-dashoffset="264" />
+          </svg>
+          <div class="score-center">
+            <div class="score-number" id="scoreNum">0</div>
+            <div class="score-label">Score</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meta Bar -->
+      <div class="meta-bar" id="metaBarResults"></div>
+
+      <!-- Body -->
+      <div class="results-body">
+
+        <!-- Technology Stack -->
+        <div class="section-title">🔧 Technology Stack</div>
+        <div style="margin-bottom:1rem">
+          <div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:0.5rem">Primary Domain</div>
+          <div class="tech-tags" id="primaryDomainTag"></div>
+        </div>
+        <div style="margin-bottom:1.5rem">
+          <div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:0.5rem">Identified Technologies</div>
+          <div class="tech-tags" id="techTags"></div>
+        </div>
+
+        <!-- Cutting-Edge Correlation -->
+        <div class="section-title">⚡ 2025 Cutting-Edge Correlation</div>
+        <div class="correlation-grid" id="correlationGrid" style="margin-bottom:1.5rem"></div>
+
+        <!-- Innovation Factor Scores -->
+        <div class="section-title">📈 Innovation Factor Analysis</div>
+        <div class="score-bar-wrap" id="factorBars"></div>
+
+        <!-- TRL -->
+        <div class="section-title">🛠 Technology Readiness Level</div>
+        <div class="trl-wrap" id="trlWrap"></div>
+
+        <!-- Business Assessment -->
+        <div class="section-title">💼 Business Assessment</div>
+        <div class="business-grid" id="bizGrid" style="margin-bottom:1.5rem"></div>
+
+        <!-- Strengths & Concerns -->
+        <div class="two-col" style="margin-bottom:1.5rem">
+          <div>
+            <div class="section-title">✅ Strengths</div>
+            <div class="check-list" id="strengthsList"></div>
+          </div>
+          <div>
+            <div class="section-title">⚠️ Concerns & Gaps</div>
+            <div class="check-list" id="concernsList"></div>
+          </div>
+        </div>
+
+        <!-- Comparable Innovations -->
+        <div class="section-title" id="compSection" style="display:none">🔗 Comparable Innovations</div>
+        <div class="comp-chips" id="compChips" style="display:none"></div>
+
+        <!-- Executive Summary -->
+        <div class="section-title">📝 Executive Summary</div>
+        <div class="summary-box" id="summaryBox"></div>
+
+        <!-- Recommendation -->
+        <div class="section-title">🎯 Recommendation</div>
+        <div class="rec-box">
+          <div class="rec-box-title">Innovation Program Assessment</div>
+          <div class="rec-box-text" id="recText"></div>
+        </div>
+
+        <!-- Verdict Reasoning -->
+        <div class="section-title">💡 Verdict Reasoning</div>
+        <div class="summary-box" id="verdictReasoning"></div>
+
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<script>
+  // ── File State ──
+  let videoFile = null;
+  let pdfFile = null;
+
+  // ── Drag & Drop ──
+  ['videoZone', 'pdfZone'].forEach(id => {
+    const zone = document.getElementById(id);
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (!files.length) return;
+      if (id === 'videoZone') handleVideoFile(files[0]);
+      else handlePdfFile(files[0]);
+    });
+  });
+
+  document.getElementById('videoInput').addEventListener('change', e => {
+    if (e.target.files[0]) handleVideoFile(e.target.files[0]);
+  });
+  document.getElementById('pdfInput').addEventListener('change', e => {
+    if (e.target.files[0]) handlePdfFile(e.target.files[0]);
+  });
+
+  function handleVideoFile(file) {
+    videoFile = file;
+    document.getElementById('videoName').textContent = file.name;
+    document.getElementById('videoSelected').classList.add('show');
+    document.getElementById('analyzeBtn').disabled = false;
+  }
+
+  function handlePdfFile(file) {
+    pdfFile = file;
+    document.getElementById('pdfName').textContent = file.name;
+    document.getElementById('pdfSelected').classList.add('show');
+  }
+
+  function removeFile(type) {
+    if (type === 'video') {
+      videoFile = null;
+      document.getElementById('videoInput').value = '';
+      document.getElementById('videoSelected').classList.remove('show');
+      document.getElementById('analyzeBtn').disabled = true;
+    } else {
+      pdfFile = null;
+      document.getElementById('pdfInput').value = '';
+      document.getElementById('pdfSelected').classList.remove('show');
+    }
+  }
+
+  // ── UI State ──
+  function showState(state) {
+    document.getElementById('emptyState').style.display = state === 'empty' ? 'flex' : 'none';
+    document.getElementById('progressState').classList.toggle('active', state === 'progress');
+    document.getElementById('errorState').classList.toggle('show', state === 'error');
+    document.getElementById('resultsContent').classList.toggle('show', state === 'results');
+  }
+
+  function resetUI() {
+    showState('empty');
+    document.getElementById('metaCards').style.display = 'none';
+    document.getElementById('analyzeBtn').disabled = !videoFile;
+    document.getElementById('analyzeBtn').querySelector('span').textContent = '🚀 Analyze Innovation Potential';
+  }
+
+  // ── Step Progress ──
+  let stepTimer;
+  function animateSteps() {
+    const steps = ['step1','step2','step3','step4','step5'];
+    let i = 0;
+    steps.forEach(s => { document.getElementById(s).className = 'step'; });
+
+    function nextStep() {
+      if (i < steps.length) {
+        if (i > 0) document.getElementById(steps[i-1]).className = 'step done';
+        document.getElementById(steps[i]).className = 'step active';
+        i++;
+        stepTimer = setTimeout(nextStep, 4000 + Math.random() * 2000);
+      }
+    }
+    nextStep();
+  }
+
+  // ── Run Analysis ──
+  async function runAnalysis() {
+    if (!videoFile) return;
+
+    showState('progress');
+    document.getElementById('analyzeBtn').disabled = true;
+    document.getElementById('analyzeBtn').querySelector('span').textContent = '⏳ Analyzing...';
+    animateSteps();
+
+    const formData = new FormData();
+    formData.append('video', videoFile);
+    if (pdfFile) formData.append('presentation', pdfFile);
+
+    try {
+      const res = await fetch('/api/analyze', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      clearTimeout(stepTimer);
+
+      if (!res.ok || !data.success) {
+        showError(data.error || 'Analysis failed. Please try again.');
+        return;
+      }
+
+      renderResults(data);
+    } catch (err) {
+      clearTimeout(stepTimer);
+      showError('Network error. Make sure the server is running and try again.');
+    }
+  }
+
+  function showError(msg) {
+    document.getElementById('errorMsg').textContent = msg;
+    showState('error');
+    document.getElementById('analyzeBtn').disabled = false;
+    document.getElementById('analyzeBtn').querySelector('span').textContent = '🚀 Analyze Innovation Potential';
+  }
+
+  // ── Render Results ──
+  function renderResults(data) {
+    const { meta, analysis } = data;
+
+    // Meta cards
+    document.getElementById('metaCards').style.display = 'grid';
+    document.getElementById('metaDuration').textContent = meta.duration_formatted;
+    document.getElementById('metaFrames').textContent = meta.frames_analyzed;
+    document.getElementById('metaTranscript').textContent = meta.has_transcript ? '✓' : '—';
+    document.getElementById('metaSlides').textContent = meta.has_presentation ? '✓' : '—';
+
+    // Verdict
+    const qualified = analysis.verdict === 'QUALIFIED';
+    const banner = document.getElementById('verdictBanner');
+    banner.className = 'verdict-banner ' + (qualified ? 'qualified' : 'not-qualified');
+
+    document.getElementById('verdictBadge').innerHTML =
+      (qualified ? '✓ INNOVATION QUALIFIED' : '✗ NOT QUALIFIED');
+    document.getElementById('verdictTitle').textContent =
+      qualified ? 'Approved for Innovation Program' : 'Does Not Meet Innovation Criteria';
+    document.getElementById('verdictSubtitle').textContent =
+      `Confidence: ${analysis.confidence || '—'}% · Score: ${analysis.innovation_score}/100`;
+
+    // Score gauge
+    animateGauge(analysis.innovation_score, qualified);
+
+    // Meta bar
+    const metaBarResults = document.getElementById('metaBarResults');
+    metaBarResults.innerHTML = `
+      <div class="meta-item"><span class="meta-dot">◆</span> ${meta.duration_formatted} video</div>
+      <div class="meta-item"><span class="meta-dot">◆</span> ${meta.frames_analyzed} frames analyzed</div>
+      ${meta.has_transcript ? '<div class="meta-item"><span class="meta-dot">◆</span> Audio transcribed</div>' : ''}
+      ${meta.has_presentation ? '<div class="meta-item"><span class="meta-dot">◆</span> Slides analyzed</div>' : ''}
+      <div class="meta-item"><span class="meta-dot">◆</span> TRL ${analysis.trl_assessment?.level || '—'}</div>
+    `;
+
+    // Tech Stack
+    const ts = analysis.technology_stack || {};
+    document.getElementById('primaryDomainTag').innerHTML =
+      `<span class="tech-tag primary">${ts.primary_domain || 'Unknown'}</span>`;
+
+    const techTags = document.getElementById('techTags');
+    techTags.innerHTML = (ts.identified_technologies || [])
+      .map(t => `<span class="tech-tag">${t}</span>`).join('');
+
+    // Correlations
+    const corrGrid = document.getElementById('correlationGrid');
+    const corr = ts.cutting_edge_correlation || {};
+    corrGrid.innerHTML = Object.entries(corr).map(([tech, desc]) => `
+      <div class="correlation-card">
+        <div class="correlation-tech">⚡ ${tech}</div>
+        <div class="correlation-desc">${desc}</div>
+      </div>
+    `).join('') || '<div style="color:var(--text-dim);font-size:0.85rem">No correlation data extracted.</div>';
+
+    // Innovation Factor Bars
+    const factors = analysis.innovation_factors || {};
+    const factorBars = document.getElementById('factorBars');
+    const factorData = [
+      { label: 'Novelty', score: factors.novelty_score, note: factors.novelty_reasoning },
+      { label: 'Feasibility', score: factors.feasibility_score, note: factors.feasibility_reasoning },
+      { label: 'Scalability', score: factors.scalability_score, note: factors.scalability_reasoning },
+      { label: 'Impact', score: factors.impact_score, note: factors.impact_reasoning },
+    ];
+    factorBars.innerHTML = factorData.map(f => `
+      <div>
+        <div class="score-row">
+          <div class="score-row-label">${f.label}</div>
+          <div class="score-row-bar"><div class="score-row-fill" data-score="${f.score || 0}" style="width:0"></div></div>
+          <div class="score-row-val">${f.score || '—'}</div>
+        </div>
+        ${f.note ? `<div style="font-size:0.73rem;color:var(--text-dim);margin:3px 0 6px 122px;line-height:1.5">${f.note}</div>` : ''}
+      </div>
+    `).join('');
+
+    // TRL
+    renderTRL(analysis.trl_assessment || {});
+
+    // Business
+    const biz = analysis.business_assessment || {};
+    const revClass = `revenue-${biz.revenue_potential || 'MEDIUM'}`;
+    document.getElementById('bizGrid').innerHTML = `
+      <div class="biz-card">
+        <div class="biz-card-icon">🎯</div>
+        <div class="biz-card-title">Primary Use Case</div>
+        <div class="biz-card-val">${biz.primary_use_case || '—'}</div>
+      </div>
+      <div class="biz-card">
+        <div class="biz-card-icon">💰</div>
+        <div class="biz-card-title">Revenue Potential</div>
+        <div class="biz-card-val"><span class="revenue-badge ${revClass}">${biz.revenue_potential || '—'}</span></div>
+      </div>
+      <div class="biz-card">
+        <div class="biz-card-icon">🏭</div>
+        <div class="biz-card-title">Target Industries</div>
+        <div class="biz-card-val">${(biz.target_industries || []).join(' · ') || '—'}</div>
+      </div>
+      <div class="biz-card">
+        <div class="biz-card-icon">🏆</div>
+        <div class="biz-card-title">Competitive Advantage</div>
+        <div class="biz-card-val">${biz.competitive_advantage || '—'}</div>
+      </div>
+      <div class="biz-card" style="grid-column:1/-1">
+        <div class="biz-card-icon">📈</div>
+        <div class="biz-card-title">Market Opportunity</div>
+        <div class="biz-card-val">${biz.market_opportunity || '—'}</div>
+      </div>
+    `;
+
+    // Strengths
+    document.getElementById('strengthsList').innerHTML =
+      (analysis.strengths || []).map(s => `
+        <div class="check-item">
+          <div class="check-icon green">✓</div>
+          <span>${s}</span>
+        </div>
+      `).join('') || '<div style="color:var(--text-dim);font-size:0.85rem">—</div>';
+
+    // Concerns + Gaps
+    const allConcerns = [
+      ...(analysis.concerns || []).map(c => ({ text: c, type: 'red' })),
+      ...(analysis.gaps_identified || []).map(g => ({ text: g, type: 'yellow' }))
+    ];
+    document.getElementById('concernsList').innerHTML =
+      allConcerns.map(c => `
+        <div class="check-item">
+          <div class="check-icon ${c.type}">${c.type === 'red' ? '✗' : '△'}</div>
+          <span>${c.text}</span>
+        </div>
+      `).join('') || '<div style="color:var(--text-dim);font-size:0.85rem">No significant concerns identified.</div>';
+
+    // Comparables
+    const comps = analysis.comparable_innovations || [];
+    if (comps.length) {
+      document.getElementById('compSection').style.display = 'flex';
+      document.getElementById('compChips').style.display = 'flex';
+      document.getElementById('compChips').innerHTML = comps.map(c => `<span class="comp-chip">⟳ ${c}</span>`).join('');
+    }
+
+    // Summary, recommendation, reasoning
+    document.getElementById('summaryBox').innerHTML = (analysis.executive_summary || '—')
+      .split('\n\n').map(p => `<p style="margin-bottom:0.75rem">${p}</p>`).join('');
+    document.getElementById('recText').textContent = analysis.recommendation || '—';
+    document.getElementById('verdictReasoning').textContent = analysis.verdict_reasoning || '—';
+
+    showState('results');
+
+    // Trigger animations after render
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        document.querySelectorAll('.score-row-fill').forEach(el => {
+          el.style.width = el.dataset.score + '%';
+        });
+      }, 300);
+    });
+
+    document.getElementById('analyzeBtn').disabled = false;
+    document.getElementById('analyzeBtn').querySelector('span').textContent = '🔄 Re-Analyze';
+  }
+
+  function animateGauge(score, qualified) {
+    const circumference = 264;
+    const fill = document.getElementById('gaugeFill');
+    const color = score >= 65
+      ? (score >= 80 ? '#10b981' : '#6366f1')
+      : '#ef4444';
+
+    fill.style.stroke = color;
+    document.getElementById('scoreNum').style.color = color;
+
+    const offset = circumference - (score / 100) * circumference;
+    setTimeout(() => { fill.style.strokeDashoffset = offset; }, 200);
+
+    // Animate number
+    let current = 0;
+    const step = score / 60;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, score);
+      document.getElementById('scoreNum').textContent = Math.round(current);
+      if (current >= score) clearInterval(timer);
+    }, 25);
+  }
+
+  function renderTRL(trl) {
+    const level = trl.level || 1;
+    const segs = Array.from({length: 9}, (_, i) => {
+      const cls = i + 1 === level ? 'active' : (i + 1 < level ? 'passed' : '');
+      return `<div class="trl-seg ${cls}"></div>`;
+    }).join('');
+
+    document.getElementById('trlWrap').innerHTML = `
+      <div class="trl-track">${segs}</div>
+      <div class="trl-labels">
+        <span>TRL 1</span><span>TRL 3</span><span>TRL 5</span><span>TRL 7</span><span>TRL 9</span>
+      </div>
+      <div class="trl-current">
+        <div class="trl-level-badge">${level}</div>
+        <div>
+          <div class="trl-label-text">${trl.label || 'Unknown'}</div>
+          <div class="trl-desc-text">${trl.description || ''}</div>
+        </div>
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>
